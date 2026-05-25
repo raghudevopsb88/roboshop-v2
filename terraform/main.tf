@@ -11,8 +11,19 @@ data "aws_route_table" "default" {
   }
 }
 
+data "aws_kms_alias" "ebs" {
+  name = "alias/aws/ebs"
+}
+
 locals {
   network_key = var.env
+
+  # Use account default EBS key when unset or still a template placeholder
+  kms_key_arn = (
+    var.kms_key_id == "" ||
+    strcontains(var.kms_key_id, "ACCOUNT_ID") ||
+    strcontains(var.kms_key_id, "KEY_ID")
+  ) ? data.aws_kms_alias.ebs.target_key_arn : var.kms_key_id
 }
 
 module "vpc" {
@@ -49,7 +60,7 @@ module "eks" {
   source = "./modules/eks"
 
   env                 = var.env
-  kms_key_id          = var.kms_key_id
+  kms_key_id          = local.kms_key_arn
   cluster_version     = var.cluster_version
   vpc_id              = module.vpc[local.network_key].vpc_id
   subnets             = module.vpc[local.network_key].app_subnet_ids
