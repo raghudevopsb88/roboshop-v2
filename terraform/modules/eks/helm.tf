@@ -163,14 +163,6 @@ resource "helm_release" "external_dns" {
   chart            = "external-dns"
   namespace        = "external-dns"
   create_namespace = true
-
-  dynamic "set" {
-    for_each = local.external_dns_sets
-    content {
-      name  = set.value.name
-      value = set.value.value
-    }
-  }
 }
 
 resource "helm_release" "argocd" {
@@ -214,25 +206,25 @@ resource "helm_release" "prometheus_stack" {
   }
 }
 
-resource "helm_release" "roboshop_apps" {
-  for_each = local.app_charts
+# resource "helm_release" "roboshop_apps" {
+#   for_each = local.app_charts
 
-  depends_on = [helm_release.traefik, aws_eks_node_group.main]
+#   depends_on = [helm_release.traefik, aws_eks_node_group.main]
 
-  name             = each.key
-  chart            = "${path.module}/../../../helm/charts/${each.key}"
-  namespace        = "roboshop"
-  create_namespace = true
-  timeout          = 600
+#   name             = each.key
+#   chart            = "${path.module}/../../../helm/charts/${each.key}"
+#   namespace        = "roboshop"
+#   create_namespace = true
+#   timeout          = 600
 
-  values = [
-    yamlencode(merge(each.value, {
-      global = {
-        env             = var.env
-        dbHosts         = var.db_service_hosts
-        ingressClass    = "traefik"
-        imagePullPolicy = "IfNotPresent"
-      }
-    }))
-  ]
-}
+#   values = [
+#     yamlencode(merge(each.value, {
+#       global = {
+#         env             = var.env
+#         dbHosts         = var.db_service_hosts
+#         ingressClass    = "traefik"
+#         imagePullPolicy = "IfNotPresent"
+#       }
+#     }))
+#   ]
+# }
