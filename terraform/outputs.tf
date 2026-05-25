@@ -35,3 +35,7 @@ output "eks_cluster_certificate_authority" {
   value     = module.eks.cluster_certificate_authority
   sensitive = true
 }
+
+output "eks_kms_key_arn" {
+  value = module.eks.kms_key_arn
+}

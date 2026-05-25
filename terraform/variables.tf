@@ -26,8 +26,7 @@ variable "network" {
 
 variable "kms_key_id" {
   type        = string
-  default     = ""
-  description = "KMS key ARN for EKS secrets encryption and encrypted node volumes. Leave empty to use alias/aws/ebs in the current account."
+  description = "KMS key ARN used for EKS secrets encryption, EKS node volumes, and EC2 DB volumes."
 }
 
 variable "cluster_version" {

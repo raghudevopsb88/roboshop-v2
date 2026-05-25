@@ -20,6 +20,7 @@ resource "aws_instance" "this" {
 
   root_block_device {
     encrypted   = true
+    kms_key_id  = var.kms_key_id
     volume_size = var.root_volume_size
     volume_type = "gp3"
   }

@@ -14,6 +14,10 @@ variable "ec2_password" {
   sensitive = true
 }
 
+variable "kms_key_id" {
+  type = string
+}
+
 variable "associate_public_ip" {
   type    = bool
   default = false

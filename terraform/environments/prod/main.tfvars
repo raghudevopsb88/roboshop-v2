@@ -7,7 +7,7 @@ ec2_password = "CHANGE_ME"
 
 ansible_repo_url = "https://github.com/raghudevopsb88/roboshop-v1.git"
 
-kms_key_id          = ""
+kms_key_id          = "arn:aws:kms:us-east-1:739561048503:key/6a83bdae-47d1-4774-9fae-dafe28349ade"
 dns_domain          = "example.com."
 acm_certificate_arn = "arn:aws:acm:us-east-1:ACCOUNT_ID:certificate/CERT_ID"
 

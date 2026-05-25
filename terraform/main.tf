@@ -11,19 +11,8 @@ data "aws_route_table" "default" {
   }
 }
 
-data "aws_kms_alias" "ebs" {
-  name = "alias/aws/ebs"
-}
-
 locals {
   network_key = var.env
-
-  # Use account default EBS key when unset or still a template placeholder
-  kms_key_arn = (
-    var.kms_key_id == "" ||
-    strcontains(var.kms_key_id, "ACCOUNT_ID") ||
-    strcontains(var.kms_key_id, "KEY_ID")
-  ) ? data.aws_kms_alias.ebs.target_key_arn : var.kms_key_id
 }
 
 module "vpc" {
@@ -50,6 +39,7 @@ module "ec2" {
   ami_id            = var.ami_id
   ec2_user          = var.ec2_user
   ec2_password      = var.ec2_password
+  kms_key_id        = var.kms_key_id
   ansible_repo_url  = var.ansible_repo_url
   artifact_base_url = var.artifact_base_url
   ssh_cidr_blocks   = concat(var.ssh_cidr_blocks, [module.vpc[local.network_key].vpc_cidr])
@@ -60,7 +50,7 @@ module "eks" {
   source = "./modules/eks"
 
   env                 = var.env
-  kms_key_id          = local.kms_key_arn
+  kms_key_id          = var.kms_key_id
   cluster_version     = var.cluster_version
   vpc_id              = module.vpc[local.network_key].vpc_id
   subnets             = module.vpc[local.network_key].app_subnet_ids

@@ -127,6 +127,7 @@ module "ec2_db" {
   security_group_ids = local.security_group_ids
   route53_zone_id    = aws_route53_zone.private.zone_id
   dns_zone           = local.dns_zone
+  kms_key_id         = var.kms_key_id
   tags               = var.tags
   user_data_vars     = local.user_data_common
 }

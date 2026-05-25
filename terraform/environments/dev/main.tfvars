@@ -8,9 +8,7 @@ ec2_password = "DevOps321"
 
 ansible_repo_url = "https://github.com/raghudevopsb88/roboshop-v1.git"
 
-# Leave empty to auto-use alias/aws/ebs in the current account, or set an explicit key ARN:
-# kms_key_id = "arn:aws:kms:us-east-1:739561048503:key/6a83bdae-47d1-4774-9fae-dafe28349ade"
-kms_key_id = ""
+kms_key_id = "arn:aws:kms:us-east-1:739561048503:key/6a83bdae-47d1-4774-9fae-dafe28349ade"
 
 # Public ingress (Traefik NLB) — optional until you have DNS/ACM
 dns_domain          = "raghudevopsb88.online"

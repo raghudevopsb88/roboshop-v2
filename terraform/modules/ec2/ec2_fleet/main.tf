@@ -11,6 +11,7 @@ module "ec2" {
   associate_public_ip = lookup(each.value, "associate_public_ip", false)
   ec2_user            = var.ec2_user
   ec2_password        = var.ec2_password
+  kms_key_id          = var.kms_key_id
 
   tags = merge(var.tags, {
     Environment = var.env

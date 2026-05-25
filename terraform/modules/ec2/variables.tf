@@ -15,6 +15,7 @@ variable "ec2_password" {
 variable "ansible_repo_url" {}
 variable "artifact_base_url" {}
 variable "ssh_cidr_blocks" { type = list(string) }
+variable "kms_key_id" { type = string }
 variable "tags" {
   type    = map(string)
   default = {}
