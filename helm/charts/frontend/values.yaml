@@ -1,0 +1,34 @@
+replicaCount: 1
+
+image:
+  repository: dummy/roboshop-frontend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  port: 80
+  targetPort: 80
+
+ingress:
+  enabled: true
+  host: frontend
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+env: {}
+
+global:
+  env: dev
+  ingressClass: traefik
+  imagePullPolicy: IfNotPresent
+  dbHosts:
+    mysql: ""
+    mongodb: ""
+    valkey: ""
+    rabbitmq: ""

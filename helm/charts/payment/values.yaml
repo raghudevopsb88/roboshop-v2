@@ -1,0 +1,34 @@
+replicaCount: 1
+
+image:
+  repository: dummy/roboshop-payment
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8005
+  targetPort: 8005
+
+ingress:
+  enabled: true
+  host: payment
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+env: {}
+
+global:
+  env: dev
+  ingressClass: traefik
+  imagePullPolicy: IfNotPresent
+  dbHosts:
+    mysql: ""
+    mongodb: ""
+    valkey: ""
+    rabbitmq: ""

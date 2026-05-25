@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "roboshop.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+data:
+  MYSQL_HOST: {{ .Values.global.dbHosts.mysql | default "mysql" | quote }}
+  MONGODB_HOST: {{ .Values.global.dbHosts.mongodb | default "mongodb" | quote }}
+  VALKEY_HOST: {{ .Values.global.dbHosts.valkey | default "valkey" | quote }}
+  RABBITMQ_HOST: {{ .Values.global.dbHosts.rabbitmq | default "rabbitmq" | quote }}
+  ENV: {{ .Values.global.env | default "dev" | quote }}
+{{- range $k, $v := .Values.env }}
+  {{ $k }}: {{ $v | quote }}
+{{- end }}

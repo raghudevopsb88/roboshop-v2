@@ -1,0 +1,34 @@
+replicaCount: 1
+
+image:
+  repository: dummy/roboshop-shipping
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8004
+  targetPort: 8004
+
+ingress:
+  enabled: true
+  host: shipping
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+env: {}
+
+global:
+  env: dev
+  ingressClass: traefik
+  imagePullPolicy: IfNotPresent
+  dbHosts:
+    mysql: ""
+    mongodb: ""
+    valkey: ""
+    rabbitmq: ""

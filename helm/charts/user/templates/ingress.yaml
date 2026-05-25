@@ -1,0 +1,22 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "roboshop.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "roboshop.labels" . | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.global.ingressClass | default "traefik" }}
+  rules:
+    - host: {{ .Values.ingress.host | default (printf "%s.local" .Chart.Name) }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "roboshop.fullname" . }}
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}
