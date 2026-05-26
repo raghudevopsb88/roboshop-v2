@@ -1,4 +1,6 @@
 replicaCount: 1
+fullnameOverride: roboshop-notification
+
 
 image:
   repository: dummy/roboshop-notification

@@ -1,4 +1,6 @@
 replicaCount: 1
+fullnameOverride: roboshop-cart
+
 
 image:
   repository: dummy/roboshop-cart

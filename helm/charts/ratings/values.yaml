@@ -1,4 +1,6 @@
 replicaCount: 1
+fullnameOverride: roboshop-ratings
+
 
 image:
   repository: dummy/roboshop-ratings

@@ -1,4 +1,6 @@
 replicaCount: 1
+fullnameOverride: roboshop-frontend
+
 
 image:
   repository: dummy/roboshop-frontend

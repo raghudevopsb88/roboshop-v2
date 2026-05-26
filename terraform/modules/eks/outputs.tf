@@ -17,3 +17,11 @@ output "cluster_security_group_id" {
 output "kms_key_arn" {
   value = var.kms_key_id
 }
+
+output "roboshop_ssm_role_arn" {
+  value = aws_iam_role.roboshop_ssm.arn
+}
+
+output "roboshop_service_accounts" {
+  value = [for app in local.roboshop_apps : "roboshop-${app}"]
+}

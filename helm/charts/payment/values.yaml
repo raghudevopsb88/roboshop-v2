@@ -1,4 +1,6 @@
 replicaCount: 1
+fullnameOverride: roboshop-payment
+
 
 image:
   repository: dummy/roboshop-payment

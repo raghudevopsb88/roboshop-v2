@@ -1,4 +1,6 @@
 replicaCount: 1
+fullnameOverride: roboshop-user
+
 
 image:
   repository: dummy/roboshop-user

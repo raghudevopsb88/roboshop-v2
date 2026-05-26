@@ -39,3 +39,11 @@ output "eks_cluster_certificate_authority" {
 output "eks_kms_key_arn" {
   value = module.eks.kms_key_arn
 }
+
+output "roboshop_ssm_role_arn" {
+  value = module.eks.roboshop_ssm_role_arn
+}
+
+output "roboshop_service_accounts" {
+  value = module.eks.roboshop_service_accounts
+}

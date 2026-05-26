@@ -1,4 +1,6 @@
 replicaCount: 1
+fullnameOverride: roboshop-catalogue
+
 
 image:
   repository: dummy/roboshop-catalogue

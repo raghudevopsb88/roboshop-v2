@@ -12,3 +12,9 @@ variable "node_min_size" { type = number }
 variable "node_max_size" { type = number }
 variable "node_capacity_type" { type = string }
 variable "db_service_hosts" { type = map(string) }
+
+variable "app_namespace" {
+  type        = string
+  default     = "roboshop"
+  description = "Kubernetes namespace where RoboShop app service accounts run"
+}

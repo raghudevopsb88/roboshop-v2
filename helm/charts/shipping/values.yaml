@@ -1,4 +1,6 @@
 replicaCount: 1
+fullnameOverride: roboshop-shipping
+
 
 image:
   repository: dummy/roboshop-shipping
