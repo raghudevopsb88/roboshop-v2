@@ -158,7 +158,7 @@ resource "aws_eks_pod_identity_association" "roboshop_apps" {
   for_each = local.roboshop_apps
 
   cluster_name    = aws_eks_cluster.main.name
-  namespace       = var.app_namespace
+  namespace       = "default"
   service_account = "roboshop-${each.key}"
   role_arn        = aws_iam_role.roboshop_ssm.arn
 }
