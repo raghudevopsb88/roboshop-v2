@@ -206,6 +206,19 @@ resource "helm_release" "prometheus_stack" {
   }
 }
 
+resource "helm_release" "file-beat" {
+
+  depends_on = [null_resource.kubeconfig]
+
+  name       = "filebeat"
+  repository = "https://helm.elastic.co"
+  chart      = "filebeat"
+
+  values = [
+    file("${path.module}/filebeat.yml")
+  ]
+}
+
 # resource "helm_release" "roboshop_apps" {
 #   for_each = local.app_charts
 
