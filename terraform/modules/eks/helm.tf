@@ -24,6 +24,7 @@ locals {
   }) : file("${path.module}/traefik-minimal.yml")
   argocd_domain     = var.dns_domain != "" ? "argocd-${var.env}.${trim(var.dns_domain, ".")}" : "argocd-${var.env}.local"
   prometheus_domain = var.dns_domain != "" ? "prometheus-${var.env}.${trim(var.dns_domain, ".")}" : "prometheus-${var.env}.local"
+  grafana_domain    = var.dns_domain != "" ? "grafana-${var.env}.${trim(var.dns_domain, ".")}" : "grafana-${var.env}.local"
 
   cluster_autoscaler_sets = [
     { name = "autoDiscovery.clusterName", value = aws_eks_cluster.main.name },
@@ -54,6 +55,8 @@ locals {
     { name = "prometheus.ingress.ingressClassName", value = "traefik" },
     { name = "prometheus.prometheusSpec.retention", value = "15d" },
     { name = "grafana.enabled", value = "true" },
+    { name = "grafana.ingress.enabled", value = "true" },
+    { name = "grafana.ingress.ingressClassName", value = "traefik" },
   ]
 
   app_charts = {
@@ -203,6 +206,11 @@ resource "helm_release" "prometheus_stack" {
   set_list {
     name  = "prometheus.ingress.hosts"
     value = [local.prometheus_domain]
+  }
+
+  set_list {
+    name  = "grafana.ingress.hosts"
+    value = [local.grafana_domain]
   }
 }
 
