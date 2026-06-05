@@ -176,6 +176,17 @@ resource "aws_eks_addon" "pod_identity_agent" {
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name = aws_eks_cluster.main.name
   addon_name   = "vpc-cni"
+
+  # App subnets are /26 — without prefix delegation the CNI exhausts pod IPs quickly.
+  configuration_values = jsonencode({
+    env = {
+      ENABLE_PREFIX_DELEGATION = "true"
+      WARM_PREFIX_TARGET       = "1"
+      WARM_IP_TARGET           = "0"
+    }
+  })
+
+  depends_on = [aws_eks_node_group.main]
 }
 
 resource "aws_eks_addon" "coredns" {
