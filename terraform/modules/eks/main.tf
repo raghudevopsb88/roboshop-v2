@@ -33,7 +33,7 @@ resource "aws_eks_cluster" "main" {
   version  = var.cluster_version
 
   vpc_config {
-    subnet_ids              = var.subnets
+    subnet_ids              = coalesce(var.cluster_subnets, var.subnets)
     endpoint_private_access = true
     endpoint_public_access  = false
   }
@@ -177,7 +177,6 @@ resource "aws_eks_addon" "vpc_cni" {
   cluster_name = aws_eks_cluster.main.name
   addon_name   = "vpc-cni"
 
-  # App subnets are /26 — without prefix delegation the CNI exhausts pod IPs quickly.
   configuration_values = jsonencode({
     env = {
       ENABLE_PREFIX_DELEGATION = "true"
@@ -185,6 +184,9 @@ resource "aws_eks_addon" "vpc_cni" {
       WARM_IP_TARGET           = "0"
     }
   })
+
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
 
   depends_on = [aws_eks_node_group.main]
 }

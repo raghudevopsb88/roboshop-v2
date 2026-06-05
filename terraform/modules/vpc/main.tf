@@ -8,6 +8,13 @@ resource "aws_vpc" "main" {
   }
 }
 
+resource "aws_vpc_ipv4_cidr_block_association" "secondary" {
+  count = var.secondary_vpc_cidr != "" ? 1 : 0
+
+  vpc_id     = aws_vpc.main.id
+  cidr_block = var.secondary_vpc_cidr
+}
+
 resource "aws_subnet" "public" {
   count                   = length(var.subnets["public_subnets"])
   vpc_id                  = aws_vpc.main.id
@@ -42,6 +49,19 @@ resource "aws_subnet" "db" {
 
   tags = {
     Name = "${var.env}-db-subnet-${count.index + 1}"
+  }
+}
+
+resource "aws_subnet" "eks" {
+  count             = length(try(var.subnets["eks_subnets"], []))
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.subnets["eks_subnets"][count.index]
+  availability_zone = var.az[count.index]
+
+  tags = {
+    Name                               = "${var.env}-eks-subnet-${count.index + 1}"
+    "kubernetes.io/role/internal-elb"  = "1"
+    "kubernetes.io/cluster/${var.env}" = "shared"
   }
 }
 
@@ -80,6 +100,15 @@ resource "aws_route_table" "db" {
   }
 }
 
+resource "aws_route_table" "eks" {
+  count  = length(try(var.subnets["eks_subnets"], []))
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.env}-eks-rt-${count.index + 1}"
+  }
+}
+
 resource "aws_route_table_association" "public" {
   count          = length(var.subnets["public_subnets"])
   subnet_id      = aws_subnet.public[count.index].id
@@ -96,6 +125,12 @@ resource "aws_route_table_association" "db" {
   count          = length(var.subnets["db_subnets"])
   subnet_id      = aws_subnet.db[count.index].id
   route_table_id = aws_route_table.db[count.index].id
+}
+
+resource "aws_route_table_association" "eks" {
+  count          = length(try(var.subnets["eks_subnets"], []))
+  subnet_id      = aws_subnet.eks[count.index].id
+  route_table_id = aws_route_table.eks[count.index].id
 }
 
 resource "aws_route" "public_internet" {
@@ -140,6 +175,13 @@ resource "aws_route" "db_nat" {
   nat_gateway_id         = aws_nat_gateway.nat[count.index % length(aws_nat_gateway.nat)].id
 }
 
+resource "aws_route" "eks_nat" {
+  count                  = length(try(var.subnets["eks_subnets"], []))
+  route_table_id         = aws_route_table.eks[count.index].id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat[count.index % length(aws_nat_gateway.nat)].id
+}
+
 # Peering to default VPC (bastion / kubectl host)
 resource "aws_vpc_peering_connection" "default" {
   peer_vpc_id = var.default_vpc_id
@@ -151,15 +193,21 @@ resource "aws_vpc_peering_connection" "default" {
   }
 }
 
+locals {
+  peered_vpc_cidrs = compact([var.vpc_cidr, var.secondary_vpc_cidr])
+}
+
 resource "aws_route" "default_rt_peering" {
+  count = length(local.peered_vpc_cidrs)
+
   route_table_id            = var.default_vpc_rt_id
-  destination_cidr_block    = var.vpc_cidr
+  destination_cidr_block    = local.peered_vpc_cidrs[count.index]
   vpc_peering_connection_id = aws_vpc_peering_connection.default.id
 }
 
 resource "aws_route" "local_rt_peering" {
-  count                     = length(concat(aws_route_table.public, aws_route_table.app, aws_route_table.db))
-  route_table_id            = concat(aws_route_table.public[*].id, aws_route_table.app[*].id, aws_route_table.db[*].id)[count.index]
+  count                     = length(concat(aws_route_table.public, aws_route_table.app, aws_route_table.db, aws_route_table.eks))
+  route_table_id            = concat(aws_route_table.public[*].id, aws_route_table.app[*].id, aws_route_table.db[*].id, aws_route_table.eks[*].id)[count.index]
   destination_cidr_block    = var.default_vpc_cidr
   vpc_peering_connection_id = aws_vpc_peering_connection.default.id
 }

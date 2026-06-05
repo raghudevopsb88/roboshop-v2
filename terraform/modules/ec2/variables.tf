@@ -1,6 +1,8 @@
 variable "env" {}
 variable "vpc_id" {}
-variable "vpc_cidr" {}
+variable "vpc_cidr_blocks" {
+  type = list(string)
+}
 variable "subnet_ids" {}
 variable "db_instances" {}
 variable "ami_id" {}

@@ -61,7 +61,7 @@ resource "aws_security_group" "db" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = var.vpc_cidr_blocks
   }
 
   ingress {
@@ -69,7 +69,7 @@ resource "aws_security_group" "db" {
     from_port   = 27017
     to_port     = 27017
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = var.vpc_cidr_blocks
   }
 
   ingress {
@@ -77,7 +77,7 @@ resource "aws_security_group" "db" {
     from_port   = 6379
     to_port     = 6379
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = var.vpc_cidr_blocks
   }
 
   ingress {
@@ -85,7 +85,7 @@ resource "aws_security_group" "db" {
     from_port   = 5672
     to_port     = 5672
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = var.vpc_cidr_blocks
   }
 
   ingress {
@@ -93,7 +93,7 @@ resource "aws_security_group" "db" {
     from_port   = 15672
     to_port     = 15672
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = var.vpc_cidr_blocks
   }
 
   egress {

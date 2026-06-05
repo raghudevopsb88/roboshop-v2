@@ -18,11 +18,13 @@ cluster_version = "1.35"
 
 network = {
   dev = {
-    vpc_cidr = "10.30.0.0/24"
+    vpc_cidr           = "10.30.0.0/24"
+    secondary_vpc_cidr = "10.31.0.0/16"
     subnets = {
       public_subnets = ["10.30.0.0/27", "10.30.0.32/27"]
       db_subnets     = ["10.30.0.64/27", "10.30.0.96/27"]
       app_subnets    = ["10.30.0.128/26", "10.30.0.192/26"]
+      eks_subnets    = ["10.31.0.0/24", "10.31.1.0/24"]
     }
     az = ["us-east-1a", "us-east-1b"]
   }

@@ -3,6 +3,11 @@ variable "kms_key_id" {}
 variable "cluster_version" { default = "1.31" }
 variable "vpc_id" {}
 variable "subnets" { type = list(string) }
+variable "cluster_subnets" {
+  type        = list(string)
+  default     = null
+  description = "All subnets for the EKS control plane. Defaults to node subnets."
+}
 variable "default_vpc_cidr" {}
 variable "dns_domain" { default = "" }
 variable "acm_certificate_arn" { default = "" }
