@@ -14,8 +14,7 @@ variable "tags" {
 
 variable "network" {
   type = map(object({
-    vpc_cidr           = string
-    secondary_vpc_cidr = optional(string, "")
+    vpc_cidr = string
     subnets = object({
       public_subnets = list(string)
       app_subnets    = list(string)

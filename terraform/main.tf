@@ -19,14 +19,13 @@ module "vpc" {
   for_each = var.network
   source   = "./modules/vpc"
 
-  env                = var.env
-  vpc_cidr           = each.value.vpc_cidr
-  secondary_vpc_cidr = try(each.value.secondary_vpc_cidr, "")
-  subnets            = each.value.subnets
-  az                 = each.value.az
-  default_vpc_id     = data.aws_vpc.default.id
-  default_vpc_rt_id  = data.aws_route_table.default.id
-  default_vpc_cidr   = data.aws_vpc.default.cidr_block
+  env               = var.env
+  vpc_cidr          = each.value.vpc_cidr
+  subnets           = each.value.subnets
+  az                = each.value.az
+  default_vpc_id    = data.aws_vpc.default.id
+  default_vpc_rt_id = data.aws_route_table.default.id
+  default_vpc_cidr  = data.aws_vpc.default.cidr_block
 }
 
 module "ec2" {

@@ -8,13 +8,6 @@ resource "aws_vpc" "main" {
   }
 }
 
-resource "aws_vpc_ipv4_cidr_block_association" "secondary" {
-  count = var.secondary_vpc_cidr != "" ? 1 : 0
-
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.secondary_vpc_cidr
-}
-
 resource "aws_subnet" "public" {
   count                   = length(var.subnets["public_subnets"])
   vpc_id                  = aws_vpc.main.id
@@ -193,15 +186,9 @@ resource "aws_vpc_peering_connection" "default" {
   }
 }
 
-locals {
-  peered_vpc_cidrs = compact([var.vpc_cidr, var.secondary_vpc_cidr])
-}
-
 resource "aws_route" "default_rt_peering" {
-  count = length(local.peered_vpc_cidrs)
-
   route_table_id            = var.default_vpc_rt_id
-  destination_cidr_block    = local.peered_vpc_cidrs[count.index]
+  destination_cidr_block    = var.vpc_cidr
   vpc_peering_connection_id = aws_vpc_peering_connection.default.id
 }
 

@@ -10,7 +10,7 @@ flowchart TB
     Bastion["EC2: kubectl + terraform"]
   end
 
-  subgraph roboshop_vpc["RoboShop VPC (10.30.0.0/24)"]
+  subgraph roboshop_vpc["RoboShop VPC (10.30.0.0/16)"]
     subgraph db["EC2 — DB tier"]
       MySQL
       MongoDB
@@ -33,7 +33,7 @@ flowchart TB
 
 | Module | Path | Purpose |
 |--------|------|---------|
-| **vpc** | `terraform/modules/vpc` | VPC, public/app/db subnets, NAT, IGW, **peering to default VPC** |
+| **vpc** | `terraform/modules/vpc` | Single `/16` VPC: public, db, app, eks subnets per AZ, NAT, IGW, **peering to default VPC** |
 | **ec2** | `terraform/modules/ec2` | MySQL, MongoDB, Valkey, RabbitMQ on EC2 + private Route53 |
 | **eks** | `terraform/modules/eks` | Production EKS, addons, platform Helm, app Helm |
 

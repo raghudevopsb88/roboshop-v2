@@ -6,12 +6,8 @@ output "vpc_cidr" {
   value = aws_vpc.main.cidr_block
 }
 
-output "secondary_vpc_cidr" {
-  value = var.secondary_vpc_cidr
-}
-
 output "all_vpc_cidr_blocks" {
-  value = compact([aws_vpc.main.cidr_block, var.secondary_vpc_cidr])
+  value = [aws_vpc.main.cidr_block]
 }
 
 output "eks_subnet_ids" {
