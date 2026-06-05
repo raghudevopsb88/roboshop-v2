@@ -120,6 +120,23 @@ resource "helm_release" "metrics_server" {
     name  = "apiService.create"
     value = "true"
   }
+
+  # EKS control plane cannot reach pod IPs for APIService discovery; use node network.
+  # Port 4443 avoids conflict with kubelet on 10250 when hostNetwork is enabled.
+  set {
+    name  = "hostNetwork.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "containerPort"
+    value = "4443"
+  }
+
+  set {
+    name  = "args[0]"
+    value = "--kubelet-insecure-tls"
+  }
 }
 
 resource "helm_release" "traefik" {
