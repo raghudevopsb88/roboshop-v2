@@ -25,3 +25,8 @@ output "roboshop_ssm_role_arn" {
 output "roboshop_service_accounts" {
   value = [for app in local.roboshop_apps : "roboshop-${app}"]
 }
+
+output "destroy_wait_id" {
+  value       = null_resource.eks_destroy_wait.id
+  description = "Barrier resource — VPC must not be destroyed until this EKS teardown completes."
+}
