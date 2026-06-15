@@ -1,6 +1,6 @@
 ---
-# image: "docker.elastic.co/beats/filebeat"
-# imageTag: "9.1.3"
+image: "docker.elastic.co/beats/filebeat"
+imageTag: "9.1.3"
 daemonset:
   extraEnvs: []
   secretMounts: []
