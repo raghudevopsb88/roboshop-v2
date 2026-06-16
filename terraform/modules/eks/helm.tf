@@ -25,6 +25,8 @@ locals {
   argocd_domain     = var.dns_domain != "" ? "argocd-${var.env}.${trim(var.dns_domain, ".")}" : "argocd-${var.env}.local"
   prometheus_domain = var.dns_domain != "" ? "prometheus-${var.env}.${trim(var.dns_domain, ".")}" : "prometheus-${var.env}.local"
   grafana_domain    = var.dns_domain != "" ? "grafana-${var.env}.${trim(var.dns_domain, ".")}" : "grafana-${var.env}.local"
+  kiali_domain      = var.dns_domain != "" ? "kiali-${var.env}.${trim(var.dns_domain, ".")}" : "kiali-${var.env}.local"
+  istio_release_tag = join(".", slice(split(".", var.istio_version), 0, 2))
 
   cluster_autoscaler_sets = [
     { name = "autoDiscovery.clusterName", value = aws_eks_cluster.main.name },
@@ -242,6 +244,72 @@ resource "helm_release" "file-beat" {
   values = [
     file("${path.module}/filebeat.yml")
   ]
+}
+
+resource "helm_release" "istio_base" {
+  depends_on = [null_resource.kubeconfig]
+
+  name             = "istio-base"
+  repository       = "https://istio-release.storage.googleapis.com/charts"
+  chart            = "base"
+  namespace        = "istio-system"
+  create_namespace = true
+  version          = var.istio_version
+}
+
+resource "helm_release" "istiod" {
+  depends_on = [
+    null_resource.kubeconfig,
+    helm_release.istio_base,
+  ]
+
+  name             = "istiod"
+  repository       = "https://istio-release.storage.googleapis.com/charts"
+  chart            = "istiod"
+  namespace        = "istio-system"
+  create_namespace = true
+  version          = var.istio_version
+}
+
+resource "null_resource" "kiali" {
+  depends_on = [
+    null_resource.kubeconfig,
+    helm_release.istiod,
+    helm_release.traefik,
+  ]
+
+  triggers = {
+    istio_version = var.istio_version
+    kiali_domain  = local.kiali_domain
+  }
+
+  provisioner "local-exec" {
+    command = <<EOF
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-${local.istio_release_tag}/samples/addons/kiali.yaml
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-${local.istio_release_tag}/samples/addons/prometheus.yaml
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-${local.istio_release_tag}/samples/addons/grafana.yaml
+kubectl apply -f - <<EOK
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kiali
+  namespace: istio-system
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: ${local.kiali_domain}
+    http:
+      paths:
+      - backend:
+          service:
+            name: kiali
+            port:
+              number: 20001
+        path: /kiali
+        pathType: Prefix
+EOK
+EOF
+  }
 }
 
 # resource "helm_release" "roboshop_apps" {

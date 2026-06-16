@@ -25,7 +25,15 @@ if aws eks describe-cluster --name "${CLUSTER_NAME}" --region "${AWS_REGION}" >/
       || true
   }
 
+  echo "Removing Istio add-ons (Kiali, Prometheus, Grafana)..."
+  kubectl delete ingress kiali -n istio-system --ignore-not-found 2>/dev/null || true
+  kubectl delete -f "https://raw.githubusercontent.com/istio/istio/release-1.30/samples/addons/kiali.yaml" --ignore-not-found 2>/dev/null || true
+  kubectl delete -f "https://raw.githubusercontent.com/istio/istio/release-1.30/samples/addons/prometheus.yaml" --ignore-not-found 2>/dev/null || true
+  kubectl delete -f "https://raw.githubusercontent.com/istio/istio/release-1.30/samples/addons/grafana.yaml" --ignore-not-found 2>/dev/null || true
+
   echo "Uninstalling Helm releases (reverse install order)..."
+  uninstall istiod istio-system
+  uninstall istio-base istio-system
   uninstall kube-prometheus-stack monitoring
   uninstall argocd argocd
   uninstall external-dns external-dns

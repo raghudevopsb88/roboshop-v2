@@ -19,6 +19,9 @@ resource "null_resource" "eks_destroy_wait" {
     helm_release.argocd,
     helm_release.prometheus_stack,
     helm_release.file-beat,
+    helm_release.istio_base,
+    helm_release.istiod,
+    null_resource.kiali,
   ]
 
   provisioner "local-exec" {

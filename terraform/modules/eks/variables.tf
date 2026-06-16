@@ -23,3 +23,9 @@ variable "app_namespace" {
   default     = "roboshop"
   description = "Kubernetes namespace where RoboShop app service accounts run"
 }
+
+variable "istio_version" {
+  type        = string
+  default     = "1.30.0"
+  description = "Istio Helm chart version for istio-base and istiod"
+}
